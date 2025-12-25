@@ -1,57 +1,3 @@
-const letterSections = [
-  {
-    key: "notice",
-    text:
-      "One thing I have come to notice about you is how much you value consistency and effort in the small daily moments, not just the big gestures. You hold on to what matters and you ask for clarity instead of letting things drift. Even when you are tired or stressed, you do not fake it; you want it real, repaired, and steady. You also notice people who are quiet in a room and bring them in. That is a pattern of care I see in you, and it is not loud, but it is constant."
-  },
-  {
-    key: "moment",
-    text:
-      "There was a night we were fighting and you still said the gratitude line. At the time it felt small, but it stayed with me. It told me you were protecting something about us even when it was hard, and that you were not using the moment to punish me. I did not show up well in that moment, but I remember that you did. It changed how I see the seriousness and the depth of how you commit."
-  },
-  {
-    key: "impact",
-    text:
-      "Being with you has changed how I carry myself in a relationship. I no longer assume love is understood; I try to show it. I pay more attention to repair and to the ways my silence or logic can land as distance. I hold myself to a higher standard around presence and follow-through, and I can trace that directly to you. You have made me take consistency seriously, not as a rule but as a form of respect."
-  },
-  {
-    key: "commitment",
-    text:
-      "Looking ahead, one thing I am committed to doing is a daily, specific act of connection that is actually within my control: a 20-second touch and one concrete appreciation before we separate or when we reconnect. This matters to me because I want you to feel seen in the way you have asked for, and I want my actions to match what I say I want. I am not promising a different personality, but I am committing to a steady practice I can keep."
-  }
-];
-
-const moments = [
-  {
-    key: "notice",
-    title: "What I Notice",
-    detail:
-      "Your standard is consistency in small moments, not big declarations. You keep track of what is repeated, not what is dramatic, and you call out drift before it becomes distance. You notice who gets overlooked in a room and bring them in quietly, which shows how much you value steadiness, attention, and care.",
-    media: "media/One.png"
-  },
-  {
-    key: "moment",
-    title: "The Moment",
-    detail:
-      "The night you still said the gratitude line while we were fighting. It stuck because you chose the ritual even when you were hurt, and you did not use the moment to punish me. That choice showed you were protecting the relationship under stress, and it made me see how serious and loyal your commitment really is.",
-    media: "media/Two.png"
-  },
-  {
-    key: "impact",
-    title: "Your Impact",
-    detail:
-      "I now value repair and follow-through more than I used to, and I feel the difference in how I show up. I pay more attention to how my silence or logic can land as distance, and I try to come back sooner instead of letting time erase it. You raised my standard around presence, and that shift is directly tied to being with you.",
-    media: "media/Three.png"
-  },
-  {
-    key: "commitment",
-    title: "My Commitment",
-    detail:
-      "A daily 20-second touch and one specific appreciation before we separate or reconnect, even on hard days. It is small enough to be consistent and specific enough to feel real, not generic. It is within my control, and it matches the kind of steady care you have asked for, not a promise I cannot keep.",
-    media: "media/Four.png"
-  }
-];
-
 const letterEl = document.getElementById("letter");
 const momentsEl = document.getElementById("moments");
 const nextBtn = document.getElementById("nextBtn");
@@ -66,8 +12,8 @@ const noteMessages = [
   "I love you so so much, you are my home."
 ];
 
-function render() {
-  letterSections.forEach((section, index) => {
+function render(paragraphs, moments) {
+  paragraphs.forEach((section, index) => {
     const p = document.createElement("p");
     p.textContent = section.text;
     p.dataset.key = section.key;
@@ -204,7 +150,22 @@ function attachEvents() {
   });
 }
 
-render();
-attachEvents();
-nextBtn.dataset.mode = "continue";
-revealNext();
+Promise.all([fetch("paragraphs.json"), fetch("why.json")])
+  .then((responses) => {
+    responses.forEach((response, index) => {
+      if (!response.ok) {
+        const name = index === 0 ? "paragraphs.json" : "why.json";
+        throw new Error(`Failed to load ${name}`);
+      }
+    });
+    return Promise.all(responses.map((response) => response.json()));
+  })
+  .then(([paragraphs, moments]) => {
+    render(paragraphs, moments);
+    attachEvents();
+    nextBtn.dataset.mode = "continue";
+    revealNext();
+  })
+  .catch((error) => {
+    console.error(error);
+  });

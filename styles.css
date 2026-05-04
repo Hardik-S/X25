@@ -130,6 +130,17 @@ h1 {
   color: #120d08;
 }
 
+.letter p.load-error {
+  color: #5f3124;
+  font-family: "Playfair Display", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.letter p.load-error::first-letter {
+  font-size: 1em;
+}
+
 .controls {
   margin-top: 24px;
   display: flex;

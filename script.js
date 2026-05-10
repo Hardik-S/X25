@@ -150,6 +150,24 @@ function attachEvents() {
   });
 }
 
+function showLoadError(error) {
+  const message = document.createElement("p");
+  message.className = "load-error visible";
+  message.textContent =
+    "I could not load the letter content. Run a local web server from this folder and refresh the page.";
+
+  letterEl.replaceChildren(message);
+  momentsEl.replaceChildren();
+  progressEl.textContent = "Not loaded";
+  nextBtn.disabled = true;
+
+  if (noteTextEl) {
+    noteTextEl.textContent = "Content did not load.";
+  }
+
+  console.error(error);
+}
+
 Promise.all([fetch("paragraphs.json"), fetch("why.json")])
   .then((responses) => {
     responses.forEach((response, index) => {
@@ -166,6 +184,4 @@ Promise.all([fetch("paragraphs.json"), fetch("why.json")])
     nextBtn.dataset.mode = "continue";
     revealNext();
   })
-  .catch((error) => {
-    console.error(error);
-  });
+  .catch(showLoadError);
